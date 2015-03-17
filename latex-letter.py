@@ -1,5 +1,6 @@
-from datetime import datetime
 import fsutils as fs
+from os import path
+from subprocess import call
 from django.template import Template, Context
 from django.conf import settings
 settings.configure()
@@ -16,15 +17,21 @@ def make_letters(names_path, template_path, dest_path):
 
     for i, name in enumerate(names.keys()):
         data = {
-            #'date': format_date(datetime.now()),
-            'i': i,
             'name': name,
             'address': names[name],
-            'filename': '%d-%s.tex' % (i, ' '.join(name.split()[-1:])),
         }
+
         rendered = template.render(Context(data))
-        print(rendered)
-        return
+
+        filename = '%d-%s.tex' % (i, ' '.join(name.split()[-1:]))
+        file_path = path.join(dest_path, filename)
+        write_file(rendered, file_path,)
+
+        pdf_name = '%d-%s.pdf' % (i, ' '.join(name.split()[-1:]))
+        pdf_path = path.join(dest_path, pdf_name)
+        call(['xelatex', file_path, '-output-directory='+ dest_path])
+    call(['convert', '*.pdf', 'output.pdf'])
+    call(['open', 'output.pdf'])
 
 def format_date(d):
     month = d.strftime('%B')
@@ -59,9 +66,13 @@ def ensure_dest(dest_path):
     fs.rm_rf(dest_path)
     fs.mkdir_p(dest_path)
 
+def write_file(data, filename):
+    with open(filename, 'w') as f:
+        f.write(data)
+
 
 names_path = "names.txt"
-template_path = "template.tex"
+template_path = "template2.tex"
 dest_path = "output"
 
 make_letters(names_path, template_path, dest_path)
