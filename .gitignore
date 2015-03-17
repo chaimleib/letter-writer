@@ -7,6 +7,6 @@
 output/
 
 # Personal data
-template*.tex
+template.tex
 names.txt
 
