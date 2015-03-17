@@ -84,9 +84,5 @@ def write_file(data, filename):
     with open(filename, 'w') as f:
         f.write(data)
 
-
-names_path = "names.txt"
-template_path = "template2.tex"
-dest_path = "output"
-
-make_letters(names_path, template_path, dest_path)
+if __name__ == "__main__":
+    make_letters("names.txt", "template.tex", "output")
