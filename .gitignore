@@ -6,4 +6,7 @@
 *.pdf
 output/
 
+# Personal data
+template*.tex
+names.txt
 
