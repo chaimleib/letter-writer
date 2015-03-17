@@ -1,5 +1,7 @@
 import fsutils as fs
+import os
 from os import path
+from PyPDF2 import PdfFileReader, PdfFileMerger
 from subprocess import call
 from django.template import Template, Context
 from django.conf import settings
@@ -15,7 +17,7 @@ def make_letters(names_path, template_path, dest_path):
 
     template = Template(text)
 
-    for i, name in enumerate(names.keys()):
+    for i, name in enumerate(sorted(names.keys())):
         data = {
             'name': name,
             'address': names[name],
@@ -29,9 +31,21 @@ def make_letters(names_path, template_path, dest_path):
 
         pdf_name = '%d-%s.pdf' % (i, ' '.join(name.split()[-1:]))
         pdf_path = path.join(dest_path, pdf_name)
-        call(['xelatex', file_path, '-output-directory='+ dest_path])
-    call(['convert', '*.pdf', 'output.pdf'])
-    call(['open', 'output.pdf'])
+        call(['xelatex', file_path])
+    join_pdfs('.', path.join(dest_path, 'output.pdf'))
+    call(['open', path.join(dest_path, 'output.pdf')])
+
+def join_pdfs(src_path, dest_path):
+    """
+    Thanks to http://www.boxcontrol.net/merge-pdf-files-with-under-10-lines-in-python.html#.VQiOL2TF-PI
+    """
+    pdf_files = [f for f in os.listdir(src_path) if f.endswith("pdf")]
+    merger = PdfFileMerger()
+
+    for filename in pdf_files:
+        merger.append(PdfFileReader(os.path.join(src_path, filename), "rb"))
+
+    merger.write(dest_path)
 
 def format_date(d):
     month = d.strftime('%B')
