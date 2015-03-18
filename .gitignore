@@ -9,4 +9,5 @@ output/
 # Personal data
 template.tex
 names.txt
-
+settings.py
+email-template.html
