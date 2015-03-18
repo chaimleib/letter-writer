@@ -25,14 +25,24 @@ def make_letters(names_path, template_path, dest_path):
 
         rendered = template.render(Context(data))
 
+        # Write the tex source
         filename = '%d-%s.tex' % (i, ' '.join(name.split()[-1:]))
         file_path = path.join(dest_path, filename)
         write_file(rendered, file_path,)
 
+        # Create the PDF
         pdf_name = '%d-%s.pdf' % (i, ' '.join(name.split()[-1:]))
-        pdf_path = path.join(dest_path, pdf_name)
         call(['xelatex', file_path])
-    join_pdfs('.', path.join(dest_path, 'output.pdf'))
+
+        # Clean temps
+        fs.rm_f(filename[:-3] + 'aux')
+        fs.rm_f(filename[:-3] + 'log')
+
+        # Move pdf to output folder
+        pdf_path = path.join(dest_path, pdf_name)
+        os.rename(pdf_name, pdf_path)
+
+    join_pdfs(dest_path, path.join(dest_path, 'output.pdf'))
     call(['open', path.join(dest_path, 'output.pdf')])
 
 def join_pdfs(src_path, dest_path):
