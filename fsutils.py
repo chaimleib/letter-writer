@@ -56,6 +56,18 @@ def put_data(data, path):
     update_file(path, data)
 
 
+def read_file(path):
+    with open(path, 'r') as f:
+        data = f.read()
+    return data
+
+
+def read_file_lines(path):
+    with open(path, 'r') as f:
+        data = f.readlines()
+    return data
+
+
 def list_subdirs(path):
     subfiles = [os.path.join(path, fn) for fn in os.listdir(path)]
     subdirs = [dir for dir in subfiles if os.path.isdir(dir)]
