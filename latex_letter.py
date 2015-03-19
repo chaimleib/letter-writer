@@ -43,7 +43,7 @@ def make_letters(names_path, template_path, dest_path):
         os.rename(pdf_name, pdf_path)
 
     join_pdfs(dest_path, path.join(dest_path, 'output.pdf'))
-    call(['open', path.join(dest_path, 'output.pdf')])
+    #call(['open', path.join(dest_path, 'output.pdf')])
 
 def join_pdfs(src_path, dest_path):
     """
