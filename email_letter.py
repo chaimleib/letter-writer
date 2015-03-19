@@ -6,20 +6,23 @@ from pprint import pprint
 
 import settings as my_settings
 from django.conf import settings
+from django.template import Template, Context
 from django.core.mail import get_connection
 from django.core.mail.message import EmailMultiAlternatives
 
-settings.configure(my_settings)
+settings.configure(**my_settings.__dict__)
 
-def make_emails(addresses_path, subject, template_path, attachments=[]):
+def make_emails(addresses_path, subject, template_path, attachments=[], context={}):
     datadicts = load_addresses(addresses_path)
-    template = fs.read_file(template_path)
+    template = Template(fs.read_file(template_path))
+
+    text = template.render(Context(context))
 
     for dd in datadicts:
         dd['attachments'] = attachments
         dd['subject'] = subject
-        dd['body'] = text_from_html(template)
-        dd['html'] = template
+        dd['body'] = text_from_html(text)
+        dd['html'] = text
 
     send_mass_mail(datadicts)
 
